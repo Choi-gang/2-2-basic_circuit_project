@@ -116,7 +116,7 @@ hc-06 블루투스 모듈 - 1개
 
 ==== 아두이노 코드 ====
 
-'''arduino
+```arduino
 //=========================KNOWLEDGE BASED SECURE SYSTEM================================//
 /*
  알파벳, 자음, 모음에 대한 번호 배정 규칙
@@ -1110,4 +1110,4 @@ void problem20() {
   lcd.setCursor(0, 3);
   lcd.print("addition?");
 }
-'''
+```
