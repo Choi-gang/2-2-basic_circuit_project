@@ -113,6 +113,16 @@ RC522 RFID 모듈 - 1개
 
 hc-06 블루투스 모듈 - 1개
 
+==== 완성사진 ====
+<img width="773" height="884" alt="image" src="https://github.com/user-attachments/assets/f9c89dd8-49a0-43af-9d28-5c555f25581c" />
+
+측면
+<img width="773" height="764" alt="image" src="https://github.com/user-attachments/assets/7a09ae3d-bfb6-4420-ad5d-d272af8d062e" />
+
+납땜 결과(순서대로 1층, 2층)
+<img width="386" height="515" alt="image" src="https://github.com/user-attachments/assets/0bea0ae4-e5cf-4e5c-9d73-5660a9c623e7" />
+<img width="386" height="515" alt="image" src="https://github.com/user-attachments/assets/84b89c4e-5249-4e74-a040-fd98656af3c1" />
+
 
 ==== 아두이노 코드 ====
 
