@@ -1,2 +1,1111 @@
 # 2-2-basic_circuit_project
 2-2기초전자회로실험프로젝트
+아두이노 우노(R3)
+
+이번 프로젝트에는 아두이노 우노를 이용하였다. 이 실험 수업이 개강했을 때 교수님이 프로젝트에 아두이노를 사용하는것을 추천하셨고 실제 수업을 담당하신 조교님이 아두이노를 사용하라고 하셨다. 회로만으로 진행하는 프로젝트면 자신이 없을 뻔 했는데 다행히 아두이노를 사용하게 되어 날개를 펼칠 수 있었다. 
+
+​
+
+디버그 과정은 마지막에 정리하도록 하고 작동방식과 사진, 회로도, 코드를 설명하겠다.
+
+​
+
+​
+
+==== 작동 방식 ====
+
+그룹 선택
+
+일단 이 시스템에는 사용자가 어떤 건물에 들어가기 전에 인증과정을 거친다는 컨셉을 갖고 있다. 이 건물에는 총 4개의 사무실이 있다. 처음에는 사용자가 본인이 속한 그룹을 선택한다. 즉 1~4 중 하나를 선택한다. 
+
+​
+
+
+키워드 말하기
+
+그룹선택을 완료하면 키워드를 말해서 통과해야 한다. 그런데 아두이노만으로 단어인식을 완벽하게 할 수는 없었기에 hc-06 블루투스 모듈 을 이용하여 핸드폰과 통신하여 개발한 앱을 통해 음성인식을 하고 핸드폰에서 인식한 단어에 따라 숫자로 변환한다. 물론 숫자로 변환해도 실제로는 는 int 가 아닌 char 이지만 아두이노에서 '0' (ASCII) 을 빼서 각 그룹숫자랑 비교가 가능하도록 했다.
+
+<img width="386" height="761" alt="image" src="https://github.com/user-attachments/assets/92749e72-4fab-4ac4-b1c0-9e7c3735612e" />
+<img width="773" height="762" alt="image" src="https://github.com/user-attachments/assets/ed21bcc0-cfe7-4cc2-9441-1816262f7138" />
+설명하자면 왼쪽은 앱 실행 시 나오는 화면이고 오른쪽이 간단히 블록 배치한거다.
+search_module 버튼을 누르면 모듈 목록들이 나오고 hc-06 을 눌러서 연결해준다.
+
+ 앱 개발은 Mit App Inventor 를 이용해주었다.
+ <img width="773" height="1718" alt="image" src="https://github.com/user-attachments/assets/38e7c3cf-5d72-4568-bb85-3ee9b049106e" />
+
+그냥 목록이 뜨는것처럼 보여도 기기 이름을 눌러주면 다른거는 잘 안되는데 hc-06 모듈은 바로 연결되었다. 이유는 잘 모르겠지만 앱이 이 프로젝트의 메인은 아니라서;; ㅎㅎ 작동되면 장땡이지뭐
+
+start_speaking 버튼을 눌러서 말을 한 다음 send_text를 눌러서 아두이노로 보내준다. 그러면 아두이노에서 판정하고 각 그룹의 키워드이면 다음단계로 넘어가고 아니면 다시 키워드를 말해야 한다.
+
+​
+
+==== 문제제시 및 정답입력 ====
+
+단어인식에 성공하면 문제를 풀어야 한다. 문제는 그룹별로 5개의 문제가 있고 랜덤으로 5개 중 1문제 나오고 문제를 맞히면 출입문이 열리고 아니면 다시 입력해야 한다.
+여기에서 만약 5번 틀리면 시스템이 잠기고 각 그룹에 지정되어있는 카드를 태그해야 잠금해제 되고 다시 처음으로 돌아가 그룹선택을 해야 한다.
+만약 5번 틀린게 아니라 문제에 대한 정답을 60초 내로 입력하지 못하면 다시 처음으로 돌아가 그룹을 선택해야 한다.
+
+정답 입력 시 문제에 대한 정답이 숫자면 그냥 숫자를 입력하면 되는데 정답이 영어 또는 한국어인 경우가 있는데 이는 나름의 규칙을 정해서 알파벳, 자음, 모음 별로 숫자를 배정한 다음 영어는 알파벳에 배정된 숫자를 더하고, 한국어는 한글자에 있는 자음, 모음 배정된 숫자를 곱한다. 이를 각 글자에 대해 수행한 후 각각 나온 결과를 더하여 정답을 도출한다.
+
+예를 들어 정답이 "목요일" 이면   5 x 5 x 1 + 8 x 6 + 8 x 10 x 4 을 수행하면 된다. 배정표는 다음과 같다.
+<img width="773" height="462" alt="image" src="https://github.com/user-attachments/assets/4cac29cf-80b5-4b3d-9fbb-d659f66c0e1b" />
+
+==== 회로도 ====
+<img width="773" height="454" alt="image" src="https://github.com/user-attachments/assets/65ad795e-64aa-4bf2-a4c9-db072a5bdb9a" />
+
+학부생이 작성한 티가 팍팍 나는 회로도이다. 아직 깔끔하게 작성하질 못해서.... 앞으로 더 발전하도록 하겠다. 
+30분만에 작성한 회로도라 틀린 부분이 있을 수도 있다.... 사용 소자가 실제로 사용한 것과 다를 수도 있다.
+디코더로 선택하고 74HC595로 출력한다.
+디지털공학에서의 MUX의 개념을 떠올리면 이해가 수월하다.
+구조는 버스구조의 개념을 반영했다고 보면 된다. 데이터 라인을 공유하고 있으니....
+
+툴은 Kicad 를 이용했는데 RC522 RFID 모듈은 여기에 없어서 따로 넣지는 않았다. RC522 모듈은 아두이노 디지털 핀 9~13 번에 연결하면 되는데 아래와 같이 연결했다.
+
+9번 -> RST
+
+10번 -> SDA(SS)
+
+11번 -> MOSI
+
+12번 -> MISO
+
+13번 -> SCK 
+
+전원 -> 반드시 3.3V 에 연결하길 바란다
+
+GND 
+
+​
+
+그리고 hc-06 모듈은 솔직히 깜빡했다. Kicad에 있을지는 모르겠는데 연결 핀은 2, 3 번에 각각 RX, TX 를 연결해줬다. 
+코드에서는 
+
+#define RX_PIN 3    
+#define TX_PIN 2  
+
+이렇게 반대로 해줘야 한다.
+
+​
+==== 사용 부품 ====
+20x4 LCD - 1개
+
+서보모터 - 1개
+
+cathode FND - 6개
+
+74LS138 디코더 - 1개
+
+74HC595 시프트 레지스터 - 1개
+
+아두이노 우노(R3) - 1개
+
+RC522 RFID 모듈 - 1개
+
+가변저항(RV-09) - 1개
+
+푸쉬버튼 - 2개
+
+10k 저항 (풀업버튼에 사용) - 2개
+
+330 저항 (FND 의 segment 에 사용) - 7개
+
+암수케이블 - 많이...
+
+hc-06 블루투스 모듈 - 1개
+
+
+==== 아두이노 코드 ====
+
+//=========================KNOWLEDGE BASED SECURE SYSTEM================================//
+/*
+ 알파벳, 자음, 모음에 대한 번호 배정 규칙
+
+  1. 알파벳 대문자 및 소문자 (a ~ z):
+    a: 1, b: 2, c: 3, d: 4, 
+    e: 5, f: 6, g: 7 h: 8, 
+    i: 9, j: 10, k: 11, l: 12,
+    m: 13, n: 14, o: 15, p: 16, 
+    q: 17, r: 18, s: 19, t: 20, 
+    u: 21, v: 22, w: 23,
+    x: 24, y: 25, z: 26
+
+  2. 한글 자음 (ㄱ ~ ㅎ):
+    ㄱ: 1, ㄴ: 2, ㄷ: 3, ㄹ: 4, ㅁ: 5, ㅂ: 6, ㅅ: 7, ㅇ: 8, ㅈ: 9, ㅊ: 10,
+    ㅋ: 11, ㅌ: 12, ㅍ: 13, ㅎ: 14
+
+  3. 한글 모음 (ㅏ ~ ㅣ):
+   ㅏ: 1, ㅑ: 2, ㅓ: 3, ㅕ: 4, ㅗ: 5, ㅛ: 6, ㅜ: 7, ㅠ: 8, ㅡ: 9, ㅣ: 10
+*/
+
+/*
+//Group1: 신호 및 시스템
+  "What is the process of transforming a continuous-time signal?" // Question 1 
+  "A system has a gain of 10. What is its value in decibels?" // Question 2 
+  "Aliasing occurs when W_s is less than or equal to how many times W_m?", // Question 3 
+  "What type of signals involve time scaling?" // Question 4 
+  "What is the sum of the alphabet positions of the word referring to N(s)=0?" // Question 5 
+
+  //Group2: 기초 전자 회로 실험2
+  "What is the total number of students in this group?" // Question 6 
+  "What is the professor's name?"// Question 7 
+  "On which day does the group’s class meet?" // Question 8 
+  "What is the final presentation date for the project?" // Question 9 
+  "What is the total number of teams in this group?"// Question 10 
+
+  //Group3: 회로이론2
+  "In a maximum average power, what is R_th if |V_th|^2=64 and P_avg=1?", // Question 11 
+  "When the phase difference is 0, what is the value of the pf?", // Question 12 
+  "What is the value when the unit impulse is Laplace transformed?", // Question 13 
+  "In the L domain, by how many degrees does voltage lead current?", // Question 14 
+  "What term refers to the condition 𝐷(s)=0?" // Question 15 
+
+  //Group4: 공학수학
+  "In 𝐴𝑋=0, what value of ∣𝐴∣ gives a non-trivial solution?", // Question 16 
+  "What is the word for A^T=A^-1?" // Question 17 
+  "What is the matrix that satisfies AA^-1=A^-1A", // Question 18 
+  "How many properties must be satisfied to define matrix addition?", // Question 19 
+  "How many properties must be satisfied to define vector addition?" // Question 20 
+*/
+//==================================================================================//
+#include<Servo.h>
+#include<SPI.h>
+#include<MFRC522.h>
+#include<LiquidCrystal_I2C.h>
+#include<SoftwareSerial.h>
+#include<avr/pgmspace.h>
+#define RX_PIN 3
+#define TX_PIN 2
+#define RST_PIN 9
+#define SS_PIN 10
+
+MFRC522 rfid(SS_PIN, RST_PIN);            
+LiquidCrystal_I2C lcd(0x27, 20, 4);
+SoftwareSerial bluetooth(RX_PIN, TX_PIN); 
+Servo myServo;
+
+//핀번호
+const int input0 = 0;       //디코더 입력 1
+const int input1 = 1;       //디코더 입력 2
+//2, 3 => 블루투스 RX, TX
+const int input2 = 4;       //디코더 입력 3 ==> 디코더로 FND common pin 역할 
+const int fndData = 5;      // 시프트 레지스터 데이터 핀 
+const int fndLatch = 6;     // 시프트 레지스터 래치 핀 
+const int fndClock = 7;     // 시프트 레지스터 클럭 핀 
+const int oe = 8;           //시프트 레지스터 출력저항통제
+//9~13 => RFID              //특성상 선언 필요없음
+const int potPin = 14;      //가변저항
+const int servo = 15;       //서보모터
+const int selectButton = 16;//자릿수선택 버튼
+const int submitButton = 17;//정답제출버튼
+//18, 19 => lcd
+
+//판정변수
+bool timeFinished = false;
+int countDown = 61;         //60초 카운트다운
+int falseStack = 0;         //5회 누적되면 잠기는기능
+bool locked = false;        //기본적으로는 잠겨있지 않음
+int currentFnd = 5;         //버튼으로 FND 선택위치
+int group_problem = 1;      //랜덤선택된 문제 번호
+int groupNum = 1;           //선택된 그룹
+int lastPotValue = -1;      //가변저항 안정성 위한 히스테리시스
+int currentValue1 = 0;      //그룹선택에서의 가변저항 반환값
+int currentValue2 = 0;      //정답입력에서의 가변저항 반환값
+
+// 정답 배열
+const int nswer[20] PROGMEM= {
+  49,   //nswer1  문제: What is the process of transforming a continuous-time signal?
+  20,   //nswer2  문제: If a system has a gain of 10, what is its value in decibels (dB)?
+  2,    //nswer3  문제: Aliasing occurs when W_s is less than or equal to how many times W_m?
+  151,  //nswer4  문제: What type of signals involve time scaling?
+  83,   //nswer5  문제: What term refers to the condition N(s)=0?
+  20,   //nswer6  문제: What is the total number of students in this group?
+  ,  //nswer7  문제: What is the professor's name? //교수님 성함때문에 지우겠다...
+  111,  //nswer8  문제: On which day does the group’s class meet?
+  1212, //nswer9  문제: What is the final presentation date for the project?
+  7,    //nswer10 문제: How many teams are in this group?
+  8,    //nswer11 문제: In a maximum average power, what is R_th if |V_th|^2=64 and P_avg=1?
+  1,    //nswer12 문제: When the phase difference is 0, what is the value of the pf?
+  1,    //nswer13 문제: What is the value when the unit impulse is Laplace transformed?
+  90,   //nswer14 문제: In the L domain, by how many degrees does voltage lead current?
+  67,   //nswer15 문제: What term refers to the condition D(s)=0?
+  0,    //nswer16 문제: In AX=0, what value of |A| gives a non-trivial solution?
+  112,  //nswer17 문제: What is the word for A^T=A^-1?
+  106,  //nswer18 문제: What is the matrix that satisfies AA^-1=A^-1A?
+  5,    //nswer19 문제: How many properties must be satisfied to define matrix addition?
+  5     //nswer20 문제: How many properties must be satisfied to define vector addition?
+};
+
+
+//FND변수
+const int fndDigit[10] PROGMEM = {63, 6, 91, 79, 102, 109, 125, 7, 127, 103};  //0~9에 해당하는 7세그먼트 데이터
+const int fndSecure[5] PROGMEM = {109, 121, 57, 62, 119};//SECUR
+const int fndMinus = 64;
+int fndValue[6] = {0, 0, 0, 0, 0, 0};//FND초기값
+int inputNswer = 0;
+
+
+//RFID
+//카드 UID
+const byte group1Card[4] PROGMEM = {0xBD, 0x5C, 0x1F, 0x03};//그룹1
+const byte group2Card[4] PROGMEM = {0x5E, 0x51, 0x25, 0x03};//그룹2
+const byte group3Card[4] PROGMEM = {0x65, 0xC7, 0x1F, 0x03};//그룹3
+const byte group4Card[4] PROGMEM = {0x87, 0x3D, 0x1C, 0x03};//그룹4
+void setup() {
+  pinMode(fndData, OUTPUT);
+  pinMode(fndLatch, OUTPUT);
+  pinMode(fndClock, OUTPUT);
+  pinMode(oe, OUTPUT);
+  digitalWrite(oe, HIGH);
+  pinMode(input0, OUTPUT);
+  pinMode(input1, OUTPUT);
+  pinMode(input2, OUTPUT);
+
+  pinMode(potPin, INPUT);
+  pinMode(selectButton, INPUT);
+  pinMode(submitButton, INPUT_PULLUP);
+
+  lcd.begin(20, 4);
+
+  SPI.begin();      //SPI 통신 
+  rfid.PCD_Init();  //RC522 모듈 초기화
+  pinMode(SS_PIN, OUTPUT);
+  digitalWrite(SS_PIN, HIGH);//RC522 초기 비활성화
+
+  myServo.attach(15);//15번핀
+  myServo.write(0);
+  myServo.detach();//필요하지 않을때는 비활성화
+
+  bluetooth.begin(9600); 
+}
+void problem1(); 
+void problem2();
+void problem3();
+void problem4();
+void problem5();
+void problem6();
+void problem7();
+void problem8();
+void problem9();
+void problem10();
+void problem11();
+void problem12();
+void problem13();
+void problem14();
+void problem15();
+void problem16();
+void problem17();
+void problem18();
+void problem19();
+void problem20();
+void setTimer_dispFND_buttonInput();
+void groupSelectPage();
+void operateServo(); 
+int potPinNum_nswer();
+int potPinNum_group();
+void beforeStart();
+void circulate();
+void displayFnd(bool state1, bool state2, bool state3, int value);
+void loop() {
+  if(locked == false){//평상시
+    //초기화
+    myServo.detach();
+    lcd.noBacklight();
+    digitalWrite(oe, HIGH);
+    group_problem = 1;
+    timeFinished = false;
+    countDown = 61;//초기화
+    inputNswer = 0;
+    falseStack = 0;
+    groupNum = 1;
+    currentFnd = 5;
+    lastPotValue = -1;
+    fndValue[0] = countDown / 10;
+    fndValue[1] = countDown % 10;
+    fndValue[2] = inputNswer / 1000; 
+    fndValue[3] = (inputNswer % 1000) / 100;
+    fndValue[4] = (inputNswer % 100) / 10;
+    fndValue[5] = inputNswer % 10;
+
+    while(1){
+      int potValue = analogRead(potPin);
+      beforeStart();
+      if(potValue <= 50 && digitalRead(selectButton) == LOW){
+        lcd.backlight();
+        break;
+      }
+    }
+
+    lcd.clear();
+    lcd.setCursor(6, 0);
+    lcd.print("Welcome!");
+    lcd.setCursor(4, 2);
+    lcd.print("Select group");
+    groupSelectPage();
+
+    if(digitalRead(submitButton) == LOW){//제출버튼 누르면 FND 전체에 그룹번호 잠시출력
+      lastPotValue = -1;
+      lcd.clear();
+      lcd.setCursor(6, 1);
+      lcd.print("Group: ");
+      lcd.print(groupNum);
+      for(int i = 0; i < 300; i++){
+        displayFnd(LOW, LOW, LOW, pgm_read_byte(&fndDigit[groupNum]));
+        delay(1);
+        
+        displayFnd(HIGH, LOW, LOW, pgm_read_byte(&fndDigit[groupNum]));
+        delay(1);
+
+        displayFnd(LOW, HIGH, LOW, pgm_read_byte(&fndDigit[groupNum]));
+        delay(1);
+
+        displayFnd(HIGH, HIGH, LOW, pgm_read_byte(&fndDigit[groupNum]));
+        delay(1);
+
+        displayFnd(LOW, LOW, HIGH, pgm_read_byte(&fndDigit[groupNum]));
+        delay(1);
+
+        displayFnd(HIGH, LOW, HIGH, pgm_read_byte(&fndDigit[groupNum]));
+        delay(1);
+      }
+      digitalWrite(oe, HIGH);
+      digitalWrite(fndLatch, LOW);
+      delay(10);
+      lcd.clear();//여기까지 그룹선택 완료
+//여기서부터 블루투스 로직 실행
+      while(1){
+        if(bluetooth.available()){
+          char receivedData = bluetooth.read();//블루투스통해 읽은 값 저장용도
+          //+추가로 미등록 데이터 입력 시 버퍼를 모두 지운 동작이 있었는데
+          //여기서 선언함으로써 다시 새로운 값을 받아들일 준비를 함
+          if(receivedData == '1' || receivedData == '2' || receivedData == '3' || receivedData == '4'){
+            //각명령어별로 1, 2, 3, 4 저장되어있음. 근데 폰에서 보내오는것은 int형이 아닌 char형 문자이므로
+            lcd.clear();
+            lcd.setCursor(4, 1);
+            lcd.print("Checking....");
+            for(int i = 0; i < 4; i++){
+              circulate();
+            }
+            if(groupNum == (receivedData - '0')){//여기서 판별 시 '0'을 빼서(ASCII) 숫자에 맞게 맞춰줌
+            //이 경우는 해당 그룹의 키워드가 입력되었을 경우
+              lcd.clear();
+              lcd.setCursor(5, 1);
+              lcd.print("Permitted!");
+              delay(1500);
+              lcd.clear();
+              while(bluetooth.available()){
+                bluetooth.read();
+              }
+              break;
+            }
+            else if(groupNum != (receivedData - '0')){
+            //다른그룹의 키워드가 입력되었을경우
+              lcd.clear();
+              lcd.setCursor(3, 1);
+              lcd.print("Access denied");
+              delay(1500);
+              lcd.clear();
+            }
+          }
+          else{
+          //모든 그룹의 키워드 검토했을때 아예 없는 키워드일 경우
+            lcd.clear();
+            lcd.setCursor(4, 1);
+            lcd.print("Checking....");
+            for(int i = 0; i < 4; i++){
+              circulate();
+            }
+            lcd.clear();
+            lcd.setCursor(3, 1);
+            lcd.print("Not Registered");
+            delay(1500);
+            lcd.clear();
+            while(bluetooth.available()){//이 동작은 미등록 키워드가 계속 남아서 무한루프에 빠진 문제점을 해결해줌
+              bluetooth.read();//남은 버퍼를 전부 소비한다. 이를 통해 무한루프 탈출
+            }
+          }
+        }
+        lcd.setCursor(3, 0);
+        lcd.print("Bluetooth Mode");
+        lcd.setCursor(0, 1);//블루투스 로직 최초실행 시 여기서부터 시작함
+        lcd.print("1. Connect blutooth");
+        lcd.setCursor(0, 2);
+        lcd.print("2. Speak Keyword");
+        lcd.setCursor(0, 3);
+        lcd.print("3. Press send button");
+      }
+switch(groupNum){
+        //선택된 그룹에서 문제를 무작위로 뽑음. 
+        case 1:
+          group_problem = random(1, 6);
+          break;
+        case 2:
+          group_problem = random(6, 11);
+          break;
+        case 3:
+          group_problem = random(11, 16);
+          break;
+        case 4:
+          group_problem = random(16, 21);
+          break;
+      }
+      while(falseStack < 5 && timeFinished == false){//문제 출력 부분
+        switch(group_problem){
+          case 1: problem1(); break;
+          case 2: problem2(); break;
+          case 3: problem3(); break;
+          case 4: problem4(); break;
+          case 5: problem5(); break;
+          case 6: problem6(); break;
+          case 7: problem7(); break;
+          case 8: problem8(); break;
+          case 9: problem9(); break;
+          case 10:problem10();break;
+          case 11:problem11();break;
+          case 12:problem12();break;
+          case 13:problem13();break;
+          case 14:problem14();break;
+          case 15:problem15();break;
+          case 16:problem16();break;
+          case 17:problem17();break;
+          case 18:problem18();break;
+          case 19:problem19();break;
+          case 20:problem20();break;
+        }
+        setTimer_dispFND_buttonInput();//버튼입력, 타이머 함수
+        inputNswer = fndValue[2] * 1000 + fndValue[3] * 100 + fndValue[4] * 10 + fndValue[5];
+        //제출버튼이 눌린 후 사용자가 입력한 숫자 연산을 통해 정답으로 환산함
+        if(timeFinished == false){
+          if(pgm_read_word(&nswer[group_problem - 1]) == inputNswer){//정답일 경우
+            digitalWrite(oe, HIGH);
+            lcd.clear();
+            lcd.setCursor(5, 0);
+            lcd.print("Permitted");
+            lcd.setCursor(2, 2);
+            lcd.print("Your Input: ");
+            lcd.setCursor(14, 2);
+            lcd.print(inputNswer);
+            operateServo();
+            break;
+            //탈출하면 while(locked == true) 구문 만나는데 해당사항 아니므로 loop의 처음으로 다시 돌아간다.)
+          }
+          else{//정답이 아니면
+            falseStack++;
+            if(falseStack >= 5){
+              locked = true;
+              //여기서 locked 가 true로 바뀜 
+              //지금까지 동작전제가 locked가 false 인데 true니까 종류 후 loop에서 locked == true 조건을 찾아감
+              //즉 RFID태그 로직으로 감
+              break;            
+            }   
+            digitalWrite(oe, HIGH);         
+            lcd.clear();
+            lcd.setCursor(5, 0);
+            lcd.print("Try again");
+            lcd.setCursor(2, 2);
+            lcd.print("Your Input: ");
+            lcd.setCursor(14, 2);
+            lcd.print(inputNswer);
+            delay(1000);
+            lcd.clear();
+          } 
+        }
+      }
+    }
+  }
+if (locked == true && timeFinished == false) {
+    //여기는 5번 틀린 이후 locked 가 true로 된 이후 실행되는 RFID 로직
+    digitalWrite(SS_PIN, LOW);//모듈 다시 활성화
+    digitalWrite(fndLatch, LOW);
+    digitalWrite(oe, HIGH);
+    lcd.clear();
+    lcd.setCursor(3, 0);
+    lcd.print("System locked");
+    lcd.setCursor(0, 2);
+    lcd.print("Scan card to unlock");
+    delay(100);
+
+    while(1){
+      //lcd가 깜빡거리는 현상이 있어 RFID로직 전체반복하기보단 여기서 while로 가둬줘서 lcd.clear 작업 반복 안하게 함
+      //새로운 카드가 감지되지 않으면 계속시도
+      if(!rfid.PICC_IsNewCardPresent()) {
+        delay(10);
+        continue;
+      }
+
+      //카드 UID 읽기 실패 시 계속 시도
+      if(!rfid.PICC_ReadCardSerial()) {
+        delay(10);
+        continue;
+      }
+      //감지 성공하면 
+      break;
+    }
+    //LCD에 읽은 카드 UID 출력 
+    lcd.clear();
+    lcd.setCursor(0, 0);  
+    lcd.print("ID:");
+    lcd.setCursor(3, 0);
+    for(byte i = 0; i < rfid.uid.size; i++) {
+      //카드가 태그되었을 때 고유식별번호를 출력해준다. 
+      if(rfid.uid.uidByte[i] < 0x10) {
+        lcd.print(" 0");
+      } 
+      else{
+        lcd.print(" ");
+      }
+      lcd.print(rfid.uid.uidByte[i], HEX);
+    }
+    lcd.setCursor(0, 2);
+    lcd.print("Checking access...");
+    for(int i = 0; i < 4; i++){
+      circulate();//애니매이션
+    }
+
+    //선택된 그룹에 따른 UID 비교 
+    bool accessPermitted = false;
+    switch(groupNum){
+      case 1:
+        for(byte i = 0; i < rfid.uid.size; i++) {
+          if(rfid.uid.uidByte[i] != pgm_read_byte(&group1Card[i])) {
+            accessPermitted = false;
+            break;
+          }
+          else{
+            accessPermitted = true;
+          }
+        }
+        break;
+      case 2:
+        for(byte i = 0; i < rfid.uid.size; i++) {
+          if(rfid.uid.uidByte[i] != pgm_read_byte(&group2Card[i])) {
+            accessPermitted = false;
+            break;
+          }
+          else{
+            accessPermitted = true;
+          }
+        }
+        break;
+      case 3:
+        for(byte i = 0; i < rfid.uid.size; i++) {
+          if(rfid.uid.uidByte[i] != pgm_read_byte(&group3Card[i])) {
+            accessPermitted = false;
+            break;
+          }
+          else{
+            accessPermitted = true;
+          }
+        }
+        break;
+      case 4:
+        for(byte i = 0; i < rfid.uid.size; i++) {
+          if(rfid.uid.uidByte[i] != pgm_read_byte(&group4Card[i])) {
+            accessPermitted = false;
+            break;
+          }
+          else{
+            accessPermitted = true;
+          }
+        }
+        break;
+    }
+
+    if(accessPermitted) {
+      //올바른 카드 태그 시 잠금 해제 메시지 출력
+      lcd.clear();
+      lcd.setCursor(2, 0);
+      lcd.print("System unlocked");
+      lcd.setCursor(3, 2);
+      lcd.print("Lock reset...");
+      delay(1500);
+      lcd.clear();
+      rfid.PICC_HaltA(); // 카드 통신 중지
+      digitalWrite(SS_PIN, HIGH);//다시 비활성화
+      delay(100);
+      locked = !locked;
+    } 
+    else{
+      //잘못된 카드 태그 시 경고 메시지 출력
+      lcd.clear();
+      lcd.setCursor(3, 0);
+      lcd.print("Access Denied");
+      delay(1300);
+    }
+  }
+}
+void setTimer_dispFND_buttonInput() {
+  unsigned long lastCountdownUpdate = 0;  //카운트다운 타이밍을 관리하기 위한 변수
+  unsigned long lastButtonUpdate = 0;
+  bool lastButtonState = HIGH;
+
+  while (countDown >= 0) {
+    //현재 시간을 저장
+    unsigned long currentTime = millis();
+
+    lcd.setCursor(19, 3);
+    lcd.print(currentValue2);
+
+    //카운트다운 타이머 업데이트 (1초 간격으로 감소)
+    if (currentTime - lastCountdownUpdate >= 1000) {
+      lastCountdownUpdate = currentTime;
+
+      if (countDown > 0) {
+        countDown--;
+      } 
+      else {
+        digitalWrite(fndLatch, LOW);
+        digitalWrite(oe, HIGH);
+        lcd.clear();
+        lcd.setCursor(5, 0);
+        lcd.print("Time Over");
+        lcd.setCursor(1, 2);
+        lcd.print("Select group again");
+        delay(2000);
+        lcd.clear();
+        timeFinished = true;
+        break;
+      }
+    }
+
+    if (currentFnd >= 2 && currentFnd <= 5){
+      fndValue[currentFnd] = potPinNum_nswer();
+    }//자릿수별 가변저항 값 할당
+    
+    for (int i = 0; i < 6; i++) {
+      switch (i) {
+        case 0:
+          displayFnd(LOW, LOW, LOW, pgm_read_byte(&fndDigit[countDown / 10]));
+          break;        
+        case 1:
+          displayFnd(HIGH, LOW, LOW, pgm_read_byte(&fndDigit[countDown % 10]));
+          break;        
+        case 5:
+          if (currentFnd == 5) {
+            displayFnd(HIGH, LOW, HIGH, pgm_read_byte(&fndDigit[fndValue[5]]));
+          }
+          break;        
+        case 4:
+          if (currentFnd == 4) {
+            displayFnd(LOW, LOW, HIGH, pgm_read_byte(&fndDigit[fndValue[4]]));
+          }
+          break;
+        case 3:
+          if (currentFnd == 3) {
+            displayFnd(HIGH, HIGH, LOW, pgm_read_byte(&fndDigit[fndValue[3]]));
+          }
+          break;
+        case 2:
+          if (currentFnd == 2) {
+            displayFnd(LOW, HIGH, LOW, pgm_read_byte(&fndDigit[fndValue[2]]));
+          }
+          break;
+      }
+      delay(2);
+    }
+
+    //자릿수 선택 
+    bool currentButtonState = digitalRead(selectButton);
+    if(currentTime - lastButtonUpdate >= 100){
+      //100ms의 디바운싱처리
+      lastButtonUpdate = currentTime;
+      if (currentButtonState == LOW && lastButtonState == HIGH) {
+        if (currentFnd > 2) {
+          currentFnd--;
+        } 
+        else {
+          currentFnd = 5;
+          //3번째 FND까지 왔는데 한번 더누르면 다시 6번째 FND로 돌아감 
+        }
+      }
+      lastButtonState = currentButtonState;
+      //현재 버튼상태를 currentButtonState 변수에 저장
+      //버튼이 눌린상태는 LOW => 버튼활성화 조건이 lastButtonState가 HIGH
+      //즉 버튼을 꾹 누르고있으면 일정주기로 옯겨지는게 아니라 한번만 인식한다
+
+      //제출 버튼
+      if (digitalRead(submitButton) == LOW) {
+        break;
+      }
+    }
+  }
+}
+
+void groupSelectPage(){
+  while(digitalRead(submitButton) == HIGH){
+    for(int i = 0; i < 6; i++){
+      switch(i){
+        case 0:
+          displayFnd(LOW, LOW, LOW, fndMinus);
+          delay(1.5);
+          break; 
+        case 1:
+          displayFnd(HIGH, LOW, LOW, fndMinus);
+          delay(1.5);
+          break;
+        case 2:
+          displayFnd(LOW, HIGH, LOW, pgm_read_byte(&fndDigit[groupNum]));
+          delay(1.5);
+          break;
+        case 3:
+          displayFnd(HIGH, HIGH, LOW, pgm_read_byte(&fndDigit[groupNum]));
+          delay(1.5);
+          break;
+        case 4:
+          displayFnd(LOW, LOW, HIGH, fndMinus);
+          delay(1.5);
+          break;
+        case 5:
+          displayFnd(HIGH, LOW, HIGH, fndMinus);
+          delay(1);
+          break;
+      }
+      groupNum = potPinNum_group();//가변저항 값 할당
+    }
+    lcd.setCursor(6, 3);
+    lcd.print("Group: ");
+    lcd.setCursor(13, 3);
+    lcd.print(groupNum);
+    //lcd에도 현재 그룹선택현황 출력
+    //0, 1 핀도 쓰고있어서 시리얼모니터 이용이 불가한 이유로.. 
+  }
+}
+void operateServo(){
+  delay(1500);
+  lcd.clear();
+  lcd.noBacklight();
+  //서보모터 몰아주기 위해 lcd off
+  myServo.attach(servo);
+  //서보모터 활성화
+  for(int i = 0; i < 120; i++){
+    myServo.write(i);
+    delay(7);
+  }
+  delay(2000);
+  for(int i = 120; i >= 0; i--){
+    myServo.write(i);
+    delay(7);
+  }
+  lcd.backlight();
+  //lcd backlight 활성화
+  myServo.detach();
+  //서보모터 다시 비활성화
+}
+
+int potPinNum_nswer() {
+  int sum = 0; // 총 합
+  int average = 0;
+
+  //10번 읽어서 평균을 구함
+  for(int i = 0; i < 10; i++) {
+    sum += analogRead(potPin);
+  }
+  average = sum / 10;
+
+  if(abs(average - lastPotValue) > 15) {
+    lastPotValue = average;
+  }
+
+  currentValue2 = map(average, 0, 1023, 0, 10);
+  //0~9 로 범위나눔
+
+  return currentValue2;
+}
+
+int potPinNum_group(){
+  int sum = 0;
+  int average = 0;
+  
+  //10번 읽어서 평균을 구함
+  for(int i = 0; i < 10; i++) {
+    sum += analogRead(potPin);
+  }
+  average = sum / 10;
+
+  if(abs(average - lastPotValue > 15)){
+    lastPotValue = average;
+  }
+
+  currentValue1 = map(average, 0, 1023, 1, 5);
+  //1~4 로 범위나눔
+
+  return currentValue1;
+}
+
+void beforeStart(){//SECURE
+  displayFnd(LOW, LOW, LOW, pgm_read_byte(&fndSecure[0]));
+  delay(3); 
+
+  displayFnd(HIGH, LOW, LOW, pgm_read_byte(&fndSecure[1]));
+  delay(3); 
+
+  displayFnd(LOW, HIGH, LOW, pgm_read_byte(&fndSecure[2]));
+  delay(3); 
+
+  displayFnd(HIGH, HIGH, LOW, pgm_read_byte(&fndSecure[3]));
+  delay(3); 
+
+  displayFnd(LOW, LOW, HIGH, pgm_read_byte(&fndSecure[4]));
+  delay(3); 
+
+  displayFnd(HIGH, LOW, HIGH, pgm_read_byte(&fndSecure[1]));
+  delay(3); 
+}
+void circulate(){
+  displayFnd(LOW, LOW, LOW, 1);
+  delay(24);
+
+  displayFnd(HIGH, LOW, LOW, 1);
+  delay(24);
+
+  displayFnd(LOW, HIGH, LOW, 1);
+  delay(24);
+
+  displayFnd(HIGH, HIGH, LOW, 1);
+  delay(24);
+
+  displayFnd(LOW, LOW, HIGH, 1);
+  delay(24);
+
+  displayFnd(HIGH, LOW, HIGH, 1);
+  delay(24);
+
+  displayFnd(HIGH, LOW, HIGH, 2);
+  delay(24);
+
+  displayFnd(HIGH, LOW, HIGH, 4);
+  delay(24);
+
+  displayFnd(HIGH, LOW, HIGH, 8);
+  delay(24);
+
+  displayFnd(LOW, LOW, HIGH, 8);
+  delay(24);
+
+  displayFnd(HIGH, HIGH, LOW, 8);
+  delay(24);
+
+  displayFnd(LOW, HIGH, LOW, 8);
+  delay(24);
+
+  displayFnd(HIGH, LOW, LOW, 8);
+  delay(24);
+
+  displayFnd(LOW, LOW, LOW, 8);
+  delay(24);
+
+  displayFnd(LOW, LOW, LOW, 16);
+  delay(24);
+
+  displayFnd(LOW, LOW, LOW, 32);
+  delay(24);
+
+  digitalWrite(oe, HIGH);
+}
+
+void displayFnd(bool state1, bool state2, bool state3, int value){
+  digitalWrite(oe, HIGH);
+  //비활성화
+  digitalWrite(input0, state1);
+  digitalWrite(input1, state2);
+  digitalWrite(input2, state3);
+  //디코더로 FND 선택
+  digitalWrite(fndLatch, LOW);
+  shiftOut(fndData, fndClock, MSBFIRST, value);
+  //74HC595 에 데이터(10진수) 밀어넣기
+  digitalWrite(fndLatch, HIGH);
+  //2진수로 변환된 값을 각 출력핀으로 내보냄
+  digitalWrite(oe, LOW);//활성화
+}
+//신시
+void problem1() {
+  lcd.clear();
+  lcd.setCursor(0, 0); 
+  lcd.print("What is the process"); 
+  lcd.setCursor(0, 1); 
+  lcd.print("of transforming a"); 
+  lcd.setCursor(0, 2); 
+  lcd.print("continuous-time"); 
+  lcd.setCursor(0, 3); 
+  lcd.print("signal?");
+}
+void problem2() {
+  lcd.clear();
+  lcd.setCursor(0, 0); 
+  lcd.print("If a system has a");
+  lcd.setCursor(0, 1);
+  lcd.print("gain of 10,");
+  lcd.setCursor(0, 2);
+  lcd.print("What is its value in");
+  lcd.setCursor(0, 3);
+  lcd.print("decibels?");
+}
+void problem3() {
+  lcd.clear();
+  lcd.setCursor(0, 0); 
+  lcd.print("Aliasing occurs when");
+  lcd.setCursor(0, 1);
+  lcd.print("W_s is less than or");
+  lcd.setCursor(0, 2);
+  lcd.print("equal to how many");
+  lcd.setCursor(0, 3);
+  lcd.print("times W_m?");
+}
+void problem4() {
+  lcd.clear();
+  lcd.setCursor(0, 0); 
+  lcd.print("What type of signals"); 
+  lcd.setCursor(0, 1); 
+  lcd.print("involve time scaling?");
+}
+void problem5() {
+  lcd.clear();
+  lcd.setCursor(0, 0); 
+  lcd.print("What term refers to"); 
+  lcd.setCursor(0, 1); 
+  lcd.print("the condition N(s)=0");
+  lcd.setCursor(0, 2);
+  lcd.print("?");
+}
+//기전실
+void problem6() {
+  lcd.clear();
+  lcd.setCursor(0, 0); 
+  lcd.print("How many students");
+  lcd.setCursor(0, 1);
+  lcd.print("in this class?");
+}
+void problem7() {
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print("What is the");
+  lcd.setCursor(0, 1);
+  lcd.print("professor's name?");
+}
+void problem8() {
+  lcd.clear();
+  lcd.setCursor(0, 0); 
+  lcd.print("What day of the week"); 
+  lcd.setCursor(0, 1); 
+  lcd.print("is this class held?");
+}
+void problem9() {
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print("When is the final");
+  lcd.setCursor(0, 1);
+  lcd.print("announcement date");
+  lcd.setCursor(0, 2);
+  lcd.print("of the project?");
+}
+void problem10() {
+  lcd.setCursor(0, 0);
+  lcd.print("How many teams");
+  lcd.setCursor(0, 1);
+  lcd.print("are in this class?");
+}
+//회로이론
+void problem11() {
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print("In a maximum avg");
+  lcd.setCursor(0, 1);
+  lcd.print("power, what is");
+  lcd.setCursor(0, 2);
+  lcd.print("R_th if |V_th|^2=64");
+  lcd.setCursor(0, 3);
+  lcd.print("and P_avg=1?");
+}
+void problem12() {
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print("When the phase");
+  lcd.setCursor(0, 1);
+  lcd.print("difference is 0,");
+  lcd.setCursor(0, 2);
+  lcd.print("what is the value");
+  lcd.setCursor(0, 3);
+  lcd.print("of the pf?");
+}
+void problem13() {
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print("What is the value");
+  lcd.setCursor(0, 1);
+  lcd.print("when the unit");
+  lcd.setCursor(0, 2);
+  lcd.print("impulse is Laplace");
+  lcd.setCursor(0, 3);
+  lcd.print("transformed?");
+}
+void problem14() {
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print("In the L domain,");
+  lcd.setCursor(0, 1);
+  lcd.print("by how many degrees");
+  lcd.setCursor(0, 2);
+  lcd.print("does volt lead");
+  lcd.setCursor(0, 3);
+  lcd.print("current?");
+}
+void problem15() {
+  lcd.clear();
+  lcd.setCursor(0, 0); 
+  lcd.print("What term refers to"); 
+  lcd.setCursor(0, 1); 
+  lcd.print("the condition D(s)=0?");
+}
+//공학수학
+void problem16() {
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print("In AX=0, what");
+  lcd.setCursor(0, 1);
+  lcd.print("value of |A| gives");
+  lcd.setCursor(0, 2);
+  lcd.print("a non-trivial");
+  lcd.setCursor(0, 3);
+  lcd.print("solution?");
+}
+void problem17() {
+  lcd.clear();
+  lcd.setCursor(0, 0); 
+  lcd.print("What is the word for"); 
+  lcd.setCursor(0, 1); 
+  lcd.print("A^T = A^-1?");
+}
+void problem18() {
+  lcd.clear();
+  lcd.setCursor(0, 0); 
+  lcd.print("What is the word for"); 
+  lcd.setCursor(0, 1); 
+  lcd.print("A^T = A^-1?");
+  lcd.setCursor(0, 0); 
+  lcd.print("What is the matrix"); 
+  lcd.setCursor(0, 1); 
+  lcd.print("that satisfies");
+  lcd.setCursor(0, 2); 
+  lcd.print("AA^-1 = A^-1A?");
+}
+void problem19() {
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print("How many properties");
+  lcd.setCursor(0, 1);
+  lcd.print("must be satisfied");
+  lcd.setCursor(0, 2);
+  lcd.print("to define matrix");
+  lcd.setCursor(0, 3);
+  lcd.print("addition?");
+}
+void problem20() {
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print("How many properties");
+  lcd.setCursor(0, 1);
+  lcd.print("must be satisfied");
+  lcd.setCursor(0, 2);
+  lcd.print("to define vector");
+  lcd.setCursor(0, 3);
+  lcd.print("addition?");
+}
